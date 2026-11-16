@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Krantenarchief - doorverwijzen</title>
+<style>
+  body { font: 16px/1.5 Georgia, serif; background: #faf8f3; color: #1e1c19;
+         max-width: 36em; margin: 15vh auto; padding: 0 20px; }
+  a { color: #1f4a7a; }
+  .klein { color: #6b665c; font-size: 13px; }
+</style>
+</head>
+<body>
+<h1>Krantenarchief</h1>
+<p id="tekst">Even geduld, je wordt doorgestuurd naar de zoekpagina...</p>
+<p class="klein">Bewaar dit adres als bladwijzer, niet het adres waar je
+naartoe gestuurd wordt: dat verandert telkens de zoekpagina opnieuw start.</p>
+<script>
+(async function () {
+  const tekst = document.getElementById("tekst");
+  try {
+    // ?t= omzeilt de cache van GitHub Pages (tot 10 minuten)
+    const r = await fetch("url.json?t=" + Date.now(), { cache: "no-store" });
+    const d = await r.json();
+    if (d.url) {
+      tekst.innerHTML = 'Je wordt doorgestuurd. Lukt dat niet, klik dan ' +
+        '<a href="' + d.url + '">hier</a>.';
+      location.replace(d.url);
+    } else {
+      tekst.textContent = "De zoekpagina is op dit moment niet beschikbaar" +
+        (d.sinds ? " (sinds " + d.sinds + ")" : "") + ". Probeer het later opnieuw.";
+    }
+  } catch (e) {
+    tekst.textContent = "Het adres van de zoekpagina kon niet opgehaald worden (" +
+      e.message + "). Probeer het later opnieuw.";
+  }
+})();
+</script>
+</body>
+</html>
